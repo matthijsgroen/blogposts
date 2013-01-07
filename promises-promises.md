@@ -1,4 +1,3 @@
-
 I'm developing backbone front-end apps for almost a year now. Lately the role of asynchronous objects is increasing in the projects I work on.
 
 Imagine the following code (in coffeescript):
@@ -125,14 +124,20 @@ get a bit mode cumbersome again:
         spy.should.have.been.calledWith(@nextPage, yes)
         done()
       , (error) ->
-        done error
+        done new Error error
 
 Synchronous trigger testing can be done using `chai-backbone` plugin I
 wrote some time ago.
 
-  @object.should.trigger('eventname').when ->
-    @object.trigger('eventname')
+    @object.should.trigger('eventname').when ->
+      @object.trigger('eventname')
 
 But this didn't work for promises yet.
 
+I have updated the `chai-changes` plugin that promises are supported as return value of the method provided in `when`.
+
+The 'when' block can return a promise now, and the post-conditions are run when the promise is fulfilled.
+
+    it 'lists the new page as active when fetched', (done) ->
+      @pages.should.trigger('change:active', with: [@nextPage, yes]).when((=> @router.showPage('other/page')), notify: done)
 
