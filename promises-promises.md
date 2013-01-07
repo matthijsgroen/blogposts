@@ -137,7 +137,30 @@ But this didn't work for promises yet.
 I have updated the `chai-changes` plugin that promises are supported as return value of the method provided in `when`.
 
 The 'when' block can return a promise now, and the post-conditions are run when the promise is fulfilled.
+The promise returned is a promise about the expectations, and not the
+promise returned by the callback. So if the callback returns a promise
+that is resolved, but the expectations after that resolved promise fail,
+the 'when' method returns a rejected promise with the assertion error as
+argument.
+
+When using the 'mocha-as-promised' extension, the code can then be
+cleaned up to:
+
+    it 'lists the new page as active when fetched', ->
+      @pages.should.trigger('change:active', with: [@nextPage, yes]).when => @router.showPage('other/page')
+
+Which is considerable less code then above but also more readable.
+
+I use Konacha to test my code, and it runs the test in a browser (or
+headless browser using the `konacha:run` rake task). Unfortunately,
+I am not yet able to get the mocha-as-promised working with Konacha, so
+I needed to fall back to using the 'notify' chaining method:
 
     it 'lists the new page as active when fetched', (done) ->
-      @pages.should.trigger('change:active', with: [@nextPage, yes]).when((=> @router.showPage('other/page')), notify: done)
+      @pages.should.trigger('change:active', with: [@nextPage, yes]).when(=> @router.showPage('other/page')).notify(done)
+
+Promises are really cool to use to handle the asynchronous aspects of
+your front-end logic, and using chai, chai-as-promised and now also the
+chai-changes it is really good to test these kind of processes!
+
 
