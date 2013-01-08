@@ -128,9 +128,10 @@ The changed code now looks like this:
       else
         p = new Product { code }
         p.fetch()
-        .done((product) => @add product)
-        .done((product) -> def.resolve product)
-      def
+        .done (product) =>
+          @add product)
+          def.resolve product
+      def.promise()
 
 So only the second line has changed. But now you can as a consumer of
 the promise do better chaining and error handling.
@@ -140,13 +141,13 @@ Testing promises
 
 The test code for this now also looks awesome: (mocha / chai)
 
-  beforeEach ->
-    @product = new Product code: 'abcd'
-    @products = new Products [@product]
+    beforeEach ->
+      @product = new Product code: 'abcd'
+      @products = new Products [@product]
 
-  describe '.findByArticleCode', ->
-    it 'fetches already known products', (done) ->
-      @products.findByArticleCode('abcd').should.become(@product).and.notify(done)
+    describe '.findByArticleCode', ->
+      it 'fetches already known products', (done) ->
+        @products.findByArticleCode('abcd').should.become(@product).and.notify(done)
 
 The `.notify(done)` part is needed for the asynchronity of the test.
 Hopefully I will be ably to plug `mocha-as-promised` into Konacha soon
