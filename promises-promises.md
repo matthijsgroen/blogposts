@@ -32,7 +32,7 @@ This way it works in all cases, but there are some major problems:
 
 It gets worse if you need to wrap this fetched class into another and do a request for that object as well and wait for that request to be succesful as well.
 
-A [colleague](https://github.com/bazzel) pointed me to this video: [I .promise() to show you .when() to use Deferreds by Alex McPherson](http://www.youtube.com/watch?v=juRtEEsHI9E)
+A [colleague](https://github.com/bazzel) pointed me to this video: [I .promise() to show you .when() to use Deferreds by Alex McPherson][jquery-video]
 
 *Deferreds are exactly what I was looking for!*
 
@@ -55,7 +55,7 @@ This code may not seem that different, but using the code is changed
 dramatically:
 
   products = new Products
-  products.findByArticleCode('abcd').then ->
+  products.findByArticleCode('abcd').then(product) ->
     # do something with the product
 
 Advantages of this code:
@@ -70,12 +70,48 @@ To test code like this, I wanted to use [Chai-as-promised](https://github.com/do
 the following issue: [Chai as promised is incompatible with jQuery so-called 'promises'](https://github.com/domenic/chai-as-promised/issues/12)
 
 [Dominic Denicola](https://gist.github.com/domenic) pointed me to this
-great write-up about promises: [You're Missing the Point of Promises](https://gist.github.com/3889970)
+great write-up about promises: [You're Missing the Point of Promises][promises-gist]
+
+So what are promises?
+---------------------
+
+The article above does a far better job explaining than I do, but for
+sake of completeness I want to give a short explanation. For the
+details, please read [You're Missing the Point of Promises][promises-gist]
+
+The promise pattern/mechanic is basically a way to mimic a synchronous
+function. A synchonous function is basically something that accepts
+arguments, and returns a value/object. When something goes wrong in the
+returning of this function an exception is thrown.
+
+    synchronousMethod: (arg) ->
+      if arg > 10
+        throw new Error "Arg can't be larger than 10!"
+      else
+        return arg + 10
+
+In asynchronous code, when the method is executed, we don't know its
+return value yet. And we also don't know already if the method will
+eventually fail.
+
+In the past this problem was solved by providing callbacks. Mostly a
+callback if stuff went well, and one when stuff went wrong.
+
+Promises are a way to streamline this behaviour.
+
+You basically call a method (for example: `fetchObjectFromServer`) and
+you get a promise back. This promise claims to have eventually fetched
+an object from a remote server. So a promise also has a return value
+(namely the fetched object). A callback can be bound to this promise to
+retrieve this return value when it is available. To handle errors, a
+callback can also be attached to do the error handling.
 
 It seemed that the implementation of promises done by the jQuery guys is
-actually a faulty one and not compatible with the 'specs' of [Promises/A](http://wiki.commonjs.org/wiki/Promises/A)
+actually a faulty one and not compatible with the 'specs' of [Promises/A][promises-spec]
 
 There is a lot more to promises then meets the eye.
+Mainly in the case that each part of the callback chain is also a
+promise. Again, the gist post is better in explaining than I am :-)
 
 The Promises/A page also has a lists of valid implementations, and I
 switched to '[when](https://github.com/cujojs/when)' (tried
@@ -98,6 +134,9 @@ The changed code now looks like this:
 
 So only the second line has changed. But now you can as a consumer of
 the promise do better chaining and error handling.
+
+Testing promises
+----------------
 
 The test code for this now also looks awesome: (mocha / chai)
 
@@ -163,4 +202,10 @@ Promises are really cool to use to handle the asynchronous aspects of
 your front-end logic, and using chai, chai-as-promised and now also the
 chai-changes it is really good to test these kind of processes!
 
+[jquery-video]: http://www.youtube.com/watch?v=juRtEEsHI9E
+  "I .promise() to show you .when() to use Deferreds by Alex McPherson"
+[promises-gist]: https://gist.github.com/3889970
+  "You're Missing the Point of Promises"
+[promises-spec]: http://wiki.commonjs.org/wiki/Promises/A
+  "Promises/A"
 
