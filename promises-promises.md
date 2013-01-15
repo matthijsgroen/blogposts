@@ -202,6 +202,8 @@ I needed to fall back to using the 'notify' chaining method:
 Promises are really cool to use to handle the asynchronous aspects of
 your front-end logic, and using chai, chai-as-promised and now also the
 chai-changes it is really good to test these kind of processes!
+If you are using Konacha to test your front-end code, be sure to
+checkout out [Konacha-chai-matchers gem][konacha-chai-matchers]
 
 Useful sources
 --------------
@@ -211,6 +213,7 @@ Useful sources
  * [Gist about why the jQuery implementation is wrong][promises-gist]
  * [Async Programming Part 1: It's messy][async-1]
  * [Async Programming Part 2: Promises][async-2]
+ * [Konacha-chai-matchers][konacha-chai-matchers]
 
 [jquery-video]: http://www.youtube.com/watch?v=juRtEEsHI9E
   "I .promise() to show you .when() to use Deferreds by Alex McPherson"
@@ -222,3 +225,5 @@ Useful sources
   "Async Programming Part 1: It's messy"
 [async-2]: http://blog.briancavalier.com/async-programming-part-2-promises
   "Async Programming Part 2: Promises"
+[konacha-chai-matchers]: https://github.com/matthijsgroen/konacha-chai-matchers
+  "Konacha Chai Matcher plugins and more!"
