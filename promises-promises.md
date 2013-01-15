@@ -203,10 +203,22 @@ Promises are really cool to use to handle the asynchronous aspects of
 your front-end logic, and using chai, chai-as-promised and now also the
 chai-changes it is really good to test these kind of processes!
 
+Useful sources
+--------------
+
+ * [Video about jQuery Defers][jquery-video]
+ * [Promises/A][promises-spec]
+ * [Gist about why the jQuery implementation is wrong][promises-gist]
+ * [Async Programming Part 1: It's messy][async-1]
+ * [Async Programming Part 2: Promises][async-2]
+
 [jquery-video]: http://www.youtube.com/watch?v=juRtEEsHI9E
   "I .promise() to show you .when() to use Deferreds by Alex McPherson"
 [promises-gist]: https://gist.github.com/3889970
   "You're Missing the Point of Promises"
 [promises-spec]: http://wiki.commonjs.org/wiki/Promises/A
   "Promises/A"
-
+[async-1]: http://blog.briancavalier.com/async-programming-part-1-its-messy
+  "Async Programming Part 1: It's messy"
+[async-2]: http://blog.briancavalier.com/async-programming-part-2-promises
+  "Async Programming Part 2: Promises"
