@@ -93,3 +93,10 @@ The Github community is great, active, generous, great in discussions
 and review, and thankful.
 
 
+TODO
+====
+
+- Make clear sections, add headers
+- Companies and open source dev policies?
+
+
