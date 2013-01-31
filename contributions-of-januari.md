@@ -173,8 +173,7 @@ but you never know!
 [cb]: https://github.com/matthijsgroen/chai-backbone
 [cb-plugin]: http://chaijs.com/plugins/chai-backbone
 [cb-npm]: https://npmjs.org/package/chai-backbone "Backbone assertions for the Chai assertion library"
-[cbc1]:
-https://github.com/matthijsgroen/chai-backbone/commit/437fd6d94ad5417d5f14d476395660f1d755876e "Assert true if trigger is called multiple times"
+[cbc1]: https://github.com/matthijsgroen/chai-backbone/commit/437fd6d94ad5417d5f14d476395660f1d755876e "Assert true if trigger is called multiple times"
 [cbp-2]: https://github.com/matthijsgroen/chai-backbone/pull/2 "Consider using stub instead of spy"
 [cbc2]: https://github.com/matthijsgroen/chai-backbone/commit/ea5aafc6b984871405f19759d19f601418205a34 "Run tests using nodejs"
 
