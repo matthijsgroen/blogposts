@@ -118,4 +118,5 @@ Pushed 1 commit to matthijsgroen/person-name Jan 06
 [map]: https://github.com/domenic/mocha-as-promised
 [mapp-8]: https://github.com/domenic/mocha-as-promised/issues/8 "beforeEach and afterEach time out almost every time"
 [mapp-9]: https://github.com/domenic/mocha-as-promised/pull/9 "Show original function code for toString()"
+[mapp-10]: https://github.com/domenic/mocha-as-promised/pull/10 "Return false if function is not wrapped somehow."
 
