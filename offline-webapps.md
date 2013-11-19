@@ -5,106 +5,126 @@ HTML 5 makes it possible to run your webapplications event when you're
 offline. But how easy is it to create an app that makes use of this?
 
 In this blogpost I will build a simple Rails 4 application, that
-performs some CRUD actions. Add a backbone layer on top of that and make
-sure my App functions when there is no internet connection.
+does some actions using HTML5 Offline web apps.
 
-Building the Rails app
-======================
+First we create a page that is available offline,
+then we do an AJAX call that we will replace with an offline cachable
+one. Than we will post information to the backend that, when offline
+will wait till the app gets back online.
+
+Lastly we will look into updating the HTML 5 application cache when our
+webapplication updates and conflict resolving between the offline and
+online data.
+
+Setup Rails
+-----------
 
 Open your favorite terminall shell and we can start building
 
 ```sh
 mkdir backbone-offline
 cd backbone-offline
-gem install rails --version=4.0.0
+gem install rails --version=4.0.1
 rails new .
 ```
 
-Now we have our typically Rails webapp skeleton, and now we want some
-simple CRUD objects to play around with later:
+Making a webpage offline
+========================
 
 ```sh
-rails generate scaffold hotel_room name:string
-rails generate scaffold hotel_booking arrival_date:date departure_date:date hotel_room:belongs_to
-rake db:create
-rake db:migrate
-rails s
+rails generate controller welcome index
+rails server
 ```
 
-We can now visit our rails bookings overview by visitig:
-
-[http://localhost:3000/hotel_bookings/](http://localhost:3000/hotel_bookings/)
-
-Pretty boring so far, but let's make sure our app is functioning before
-we continue to make our application into a single-page app.
-
-First we create a seed in `db/seeds.rb`:
+we edit the `config/routes.rb` to point the root to our new controller
+action:
 
 ```ruby
-['Bridal Suite', 'Business Suite', 'Family Suite'].each do |room_name|
-  HotelRoom.create name: room_name
-end
+  root 'welcome#index'
 ```
 
-Now we change our text input for the hotel room into a select:
+And time to edit the `app/views/welcome/index.html.erb` file.
+You can place here what you want, I will place some text and headers
+using HAML:
 
-```erb
-<div class="field">
-  <%= f.label :hotel_room_id %><br>
-  <%= f.collection_select :hotel_room_id, HotelRoom.all, :id, :name %>
-</div>
+```haml
+%h1 Welcome to the HTML 5 Offline test suite!
+
+%p here we will test the following capabilities of HTML 5:
+%ol
+  %li Reaching a page without internet connection
+  %li Do an AJAX call from Backbone.js when offline
+  %li Submit data to the server when offline
+  %li Update the application cache when the connection is restored
+  %li look at various ways to do conflict resolvement
+
 ```
 
-You can also change the other views to display the correct room name
-instead of the printout of the HotelRoom object instance.
+When the Rails server is started, and you point the browser to
+`http://localhost:3000/` you see the page you just created the content
+for. But when you kill the Rails server, and refresh the page, you get
+an error page from your browser telling you that the remote server could
+not be reached.
 
-We add now some backend-business rules to our HotelBooking model:
+Time to change that!
+
+To tell the browser that a webpage should be stored offline, you need to
+add a manifest attribute to the html tag:
+
+```haml
+%html{ manifest: 'application.appcache' }
+```
+
+Now we need to serve this file from Rails, using the
+`text/cache-manifest` mime-type.
+
+in `config/routes.rb`
 
 ```ruby
-validates :hotel_room_id, presence: true
-validate :departure_date_must_be_after_arrival_date
-validate :arrival_date_must_be_in_the_future
+get "/application.appcache" => proc { |env|
+  [200, { 'Content-Type' => 'text/cache-manifest' }, [<<-APPCACHE.strip_heredoc]]
+    CACHE MANIFEST
+    # 2013-11-19T06:29
 
-def departure_date_must_be_after_arrival_date
-  if departure_date.present? && arrival_date.present? && departure_date <= arrival_date
-    errors.add(:departure_date, 'must be after %s' % self.class.human_attribute_name(:arrival_date))
-  end
-end
+    CACHE:
+    /
+    /assets/application.js
+    /assets/application.css
 
-def arrival_date_must_be_in_the_future
-  if arrival_date.present? && !arrival_date.future?
-    errors.add(:arrival_date, 'must be in the future')
-  end
-end
+    NETWORK:
+    *
+  APPCACHE
+}
 ```
 
-Now we only need to prevent double bookings for the same room. Which can
-only be validated by the backend (The earlier validations can also be
-done in a full front-end fashion).
+to make sure we can use the plain urls for the assets, you can add the
+following settings to `config/environment/deveopment.rb`
 
 ```ruby
-validate :room_must_not_be_booked_already
+  config.assets.debug = false
 
-def room_must_not_be_booked_already
-  if hotel_room_id.present? && arrival_date.present? && departure_date.present?
-    arrival_date_field = self.class.arel_table[:arrival_date]
-    departure_date_field = self.class.arel_table[:departure_date]
+  # Minifiy our JS in development to have a single JS file to work with
+  config.assets.js_compressor = :uglifier
+  config.assets.compile = true
 
-    room_booked_query = self.class.
-      where(hotel_room_id: hotel_room_id).
-      where(arrival_date_field.lt(departure_date)).
-      where(departure_date_field.gt(arrival_date))
-
-    errors.add(:hotel_room_id, 'is already booked in the requested period') if room_booked_query.any?
-  end
-end
+  # Remove the digest place the file without digest in the cache file
+  config.assets.digest = false
 ```
 
-# Making the app into a single-page app
+Creating a front-end application
+--------------------------------
 
-The next step is to add a front-end layer on top of our current rails
-app. I use Backbone for this purpose. Since this post is not so much
-about making a single page app in Backbone, I suggest to checkout the
-commits I made to change the Rails app into a Backbone app.
+Time to set up backbone.
+
+```sh
+git submodule add https://github.com/jashkenas/backbone.git vendor/assets/javascripts/backbone
+git submodule add https://github.com/jashkenas/underscore.git vendor/assets/javascripts/underscore
+```
+
+This gets Backbone and its Underscore dependency right from the source.
+Next I go into the vendor folders of each library and do a git checkout
+of their latest release tag (Backbone 1.1.0 and Underscore 1.5.2 at time
+of writing).
+
 
 
