@@ -13,7 +13,7 @@ Host:
 
 Client:
 
- - ssh paigin@pairinghost
+ - ssh pairing@pairinghost
  - tmux attach
 
 Here are the instructions to build such an environment:
